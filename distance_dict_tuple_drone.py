@@ -1,5 +1,3 @@
-
-
 def calculate_distance(coordinates):
     points = {
     (0, 1): 2,
@@ -22,24 +20,22 @@ def calculate_distance(coordinates):
         now_pos = i
         
         try:
-            if start_pos < now_pos:
-                if (start_pos, now_pos) in points:
-                    vidstan +=  points[(start_pos, now_pos)]
-                
-            else:
+            if start_pos > now_pos:
                 start_pos, now_pos = now_pos, start_pos
-                if (start_pos, now_pos) in points:
-                    vidstan +=  points[(start_pos, now_pos)]
                 revers = True
-                while revers:
-                    start_pos, now_pos = now_pos, start_pos
-                    revers = False            
-        
+            
+            if (start_pos, now_pos) in points:
+                    vidstan +=  points[(start_pos, now_pos)]             
+            
+            while revers:
+                start_pos, now_pos = now_pos, start_pos
+                revers = False            
+            
         except TypeError:
             start_pos = now_pos
-    return vidstan    
+    return vidstan   
      
     
-print(calculate_distance([0, 1, 3, 2, 0]))
-# print(calculate_distance([]))
-# print(calculate_distance([25]))
+print(calculate_distance([0, 1, 3, 2, 0, 1, 3, 2]))
+print(calculate_distance([]))
+print(calculate_distance([25]))
