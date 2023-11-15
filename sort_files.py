@@ -6,7 +6,7 @@ import os
 
 
 dict_of_file = dict()       # словник категорій. Ключі категорії, значення списки файлів по категоріям
-folders = ['Images', 'Documents', 'Audio', 'Video', 'Archives'] # папки для файлів
+folders = ['images', 'documents', 'audio', 'video', 'archives'] # папки для файлів
 list_of_bad_folders = list()                                    # список папок для видалення 
 def main():
     try:
@@ -28,8 +28,9 @@ def main():
     folder_absolute = folder.absolute()
     a = 0
     for i in folders:                       # Створення абсолютних шляхів для папок категорій
-        folders[a] = str(folder_absolute.joinpath(i))
+        folders[a] = folder_absolute.joinpath(i)
         a += 1
+        
     
     for i in folders:                       # Перевірка на наявність папок категорій та створення якщо відсутні
         if not os.path.exists(i):
@@ -84,34 +85,34 @@ def find_files(path):
                 norm_name = normalize(files.name)       # перейменування файлу
                 list_of_img.append(norm_name)           # додавання в список категорії
                 set_of_suffix.add(files.suffix)         # додавання в список розширень
-                shutil.move(files.absolute(), '\\'.join([folders[0], norm_name]))     # переміщення файлу           
+                shutil.move(files.absolute(), Path(folders[0]).joinpath(norm_name)) # переміщення файлу           
             elif files.suffix.upper() in  ('.AVI', '.MP4', '.MOV', '.MKV'):
                 norm_name = normalize(files.name)
                 list_of_vid.append(norm_name)
-                set_of_suffix.add(files.suffix)
-                shutil.move(files.absolute(), '\\'.join([folders[3], norm_name]))
+                set_of_suffix.add(files.suffix)              
+                shutil.move(files.absolute(), Path(folders[3]).joinpath(norm_name))
             elif files.suffix.upper() in ('.DOC', '.DOCX', '.TXT', '.PDF', '.XLSX', '.PPTX'):
                 norm_name = normalize(files.name)
                 list_of_doc.append(norm_name)
                 set_of_suffix.add(files.suffix)
-                shutil.move(files.absolute(), '\\'.join([folders[1], norm_name]))
+                shutil.move(files.absolute(), Path(folders[1]).joinpath(norm_name))
             elif files.suffix.upper() in ('.MP3', '.OGG', '.WAV', '.AMR'):
                 norm_name = normalize(files.name)
                 list_of_audio.append(norm_name)
                 set_of_suffix.add(files.suffix)
-                shutil.move(files.absolute(), '\\'.join([folders[2], norm_name]))
+                shutil.move(files.absolute(), Path(folders[2]).joinpath(norm_name))
             elif files.suffix.upper() in  ('.ZIP', '.GZ', '.TAR'):
                 norm_name = normalize(files.name)
                 list_of_achives.append(norm_name)
                 set_of_suffix.add(files.suffix)
-                shutil.unpack_archive(files.name, '\\'.join([folders[4], re.sub('\.\w+$', '', norm_name)]))
+                shutil.unpack_archive(files.name, Path(folders[4]).joinpath(re.sub('\.\w+$', '', norm_name)))
                 os.remove(files.absolute())   
             else:                
                 list_of_unknown.append(files.name)
                 set_of_unk_suffix.add(files.suffix)                
              
         elif files.is_dir():            
-            if files.name in ['Images', 'Documents', 'Audio', 'Video', 'Archives',]:
+            if files.name in ['images', 'documents', 'audio', 'video', 'archives']:
                 continue                       
             else:
                 list_of_bad_folders.append(files.absolute())
