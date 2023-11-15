@@ -109,12 +109,13 @@ def find_files(path):
                 os.remove(files.absolute())   
             else:                
                 list_of_unknown.append(files.name)
-                set_of_unk_suffix.add(files.suffix)                
+                set_of_unk_suffix.add(files.suffix)
+                shutil.move(files.absolute(), Path(sys.argv[1]).joinpath(norm_name))                
              
         elif files.is_dir():            
             if files.name in ['images', 'documents', 'audio', 'video', 'archives']:
                 continue                       
-            else:
+            else:                              
                 list_of_bad_folders.append(files.absolute())
                 find_files(files)
 
