@@ -47,7 +47,6 @@ def main():
                 
 
     find_files(folder)                      # пошук файлів у заданій папці
-    print(dict_of_file)
     print('\n|{:-^50}|'.format('АРХІВИ'), '\n', '*'*50)                 #
     for i in dict_of_file['archives']:                                  #
         print('|{:-^50}|'.format(i))                                    #
