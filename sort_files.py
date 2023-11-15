@@ -7,7 +7,15 @@ import os
 
 dict_of_file = dict()       # словник категорій. Ключі категорії, значення списки файлів по категоріям
 folders = ['images', 'documents', 'audio', 'video', 'archives'] # папки для файлів
-list_of_bad_folders = list()                                    # список папок для видалення 
+list_of_bad_folders = list()
+set_of_suffix = set()
+set_of_unk_suffix = set()
+list_of_img = list()
+list_of_doc = list()
+list_of_audio = list()
+list_of_vid = list()
+list_of_achives = list()
+list_of_unknown = list()                                     # список папок для видалення 
 def main():
     try:
         folder = Path(sys.argv[1])
@@ -24,7 +32,7 @@ def main():
         exit(1)
     else:
         print(f"\nПривіт сортуємо файли у папці {sys.argv[1]}\n")
-        
+    
     folder_absolute = folder.absolute()
     a = 0
     for i in folders:                       # Створення абсолютних шляхів для папок категорій
@@ -39,7 +47,7 @@ def main():
                 
 
     find_files(folder)                      # пошук файлів у заданій папці
-    
+    print(dict_of_file)
     print('\n|{:-^50}|'.format('АРХІВИ'), '\n', '*'*50)                 #
     for i in dict_of_file['archives']:                                  #
         print('|{:-^50}|'.format(i))                                    #
@@ -66,17 +74,7 @@ def main():
 
 
 def find_files(path):
-    global dict_of_file
-    global folders
-    global list_of_bad_folders
-    set_of_suffix = set()
-    set_of_unk_suffix = set()
-    list_of_img = list()
-    list_of_doc = list()
-    list_of_audio = list()
-    list_of_vid = list()
-    list_of_achives = list()
-    list_of_unknown = list()   
+    globals()
 
     for files in path.iterdir():
         
@@ -99,18 +97,23 @@ def find_files(path):
             elif files.suffix.upper() in ('.MP3', '.OGG', '.WAV', '.AMR'):
                 norm_name = normalize(files.name)
                 list_of_audio.append(norm_name)
-                set_of_suffix.add(files.suffix)
+                set_of_suffix.add(files.suffix)                
                 shutil.move(files.absolute(), Path(folders[2]).joinpath(norm_name))
             elif files.suffix.upper() in  ('.ZIP', '.GZ', '.TAR'):
                 norm_name = normalize(files.name)
                 list_of_achives.append(norm_name)
                 set_of_suffix.add(files.suffix)
-                shutil.unpack_archive(files.name, Path(folders[4]).joinpath(re.sub('\.\w+$', '', norm_name)))
-                os.remove(files.absolute())   
+                name_without = re.sub('\.\w+$', '', norm_name)                
+                try:
+                    shutil.unpack_archive(files.absolute(), Path(folders[4]).joinpath(name_without))
+                except:
+                    print(f'неможливо розпакувати архів {files.name}, видалення')
+                finally:
+                    os.remove(files.absolute())   
             else:                
                 list_of_unknown.append(files.name)
                 set_of_unk_suffix.add(files.suffix)
-                shutil.move(files.absolute(), Path(sys.argv[1]).joinpath(norm_name))                
+                shutil.move(files.absolute(), Path(sys.argv[1]).joinpath(files.name))                
              
         elif files.is_dir():            
             if files.name in ['images', 'documents', 'audio', 'video', 'archives']:
