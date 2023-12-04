@@ -10,7 +10,7 @@ def get_birthdays_per_week(users):
     for user in users:
         if todayy.month == 12 and user['birthday'].month == 1:
             user['birthday'] = datetime(
-                todayy.year+1, 
+                todayy.year+1,
                 user['birthday'].month,
                 user['birthday'].day
                 ).date()
