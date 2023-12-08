@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 import re
 import shutil
-import os
+
 
 
 dict_of_file = dict()       # словник категорій. Ключі категорії, значення списки файлів по категоріям
