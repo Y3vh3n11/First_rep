@@ -71,11 +71,6 @@ def main():
             else:
                 print(res)
             
-            
-            # if cmd_without_args[handler_name] == good_bye_func:
-            #     return res                
-            # else:
-            #     res
         elif handler_name in cmd_with_args:
             res = cmd_with_args[handler_name](*args)
             print(res)
