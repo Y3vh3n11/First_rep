@@ -4,46 +4,42 @@ def input_error(func):
         while True:        
             try:
                 res = func()
+                if res == 'Бувай!':
+                    print(res)                    
+                    break
             except KeyError:
-                print('Команда не знайдена')
-            
+                print( 'Команда не знайдена')
             except TypeError:
-                print('Невірні параметри команди')
+                print( 'Невірні параметри команди')
             except IndexError:
-                print('Введено невірні дані')
+                print( 'Введено невірні дані')
             else:
-                return res            
+                print(res)            
     return wrapper
 
-def arg_decor(func):
-    def wrapper(args):        
-        res = func(*args)
-        return res
-    return wrapper
-
-@arg_decor
 def add_func(name, num):
-    phone_book[name] = num
-    print(f'Створено контакт {name} із номером {num}')    
+    if name not in phone_book.keys():
+        phone_book[name] = num
+        return f'Створено контакт {name} із номером {num}'
+    else:
+        return 'такий контакт вже створено '  
     
 
-@arg_decor
 def change_func(name, num):
         if name in phone_book.keys():
             phone_book[name] = num
-            print(f'Номер {name} змінено на {num}')
+            return f'Номер {name} змінено на {num}'
         else:
-            print('Такого контакту не існує')
+            return 'Такого контакту не існує'
         
 
-@arg_decor
 def show_func(name):
     if name == 'all':
-        print(phone_book)
+        return phone_book
     elif name not in phone_book.keys():
-        print('Такого контакту не існує')
+        return 'Такого контакту не існує'
     else:
-        print(f'{name} номер = {phone_book[name]}')
+        return f'{name} номер = {phone_book[name]}'
         
 def good_bye_func():
     return 'Бувай!'
@@ -70,14 +66,22 @@ def main():
         
         if handler_name in cmd_without_args:            
             res = cmd_without_args[handler_name]()
-            if cmd_without_args[handler_name] == good_bye_func:
-                return print(res)
+            if res == 'Бувай!':
+                return res
             else:
                 print(res)
+            
+            
+            # if cmd_without_args[handler_name] == good_bye_func:
+            #     return res                
+            # else:
+            #     res
         elif handler_name in cmd_with_args:
-            cmd_with_args[handler_name](args)
+            res = cmd_with_args[handler_name](*args)
+            print(res)
         else:
             raise KeyError
+        
         
             
     
