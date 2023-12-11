@@ -1,6 +1,8 @@
 phone_book = {}
+error = ''
 def input_error(func):
     def wrapper():
+        global error
         while True:        
             try:
                 res = func()
@@ -8,13 +10,13 @@ def input_error(func):
                     print(res)                    
                     break
             except KeyError:
-                print( 'Команда не знайдена')
+                error = 'Команда не знайдена'                 
             except TypeError:
-                print( 'Невірні параметри команди')
+                error = 'Невірні параметри команди'                
             except IndexError:
-                print( 'Введено невірні дані')
+                error = 'Введено невірні дані'                
             else:
-                print(res)            
+                return res           
     return wrapper
 
 def add_func(name, num):
@@ -22,7 +24,7 @@ def add_func(name, num):
         phone_book[name] = num
         return f'Створено контакт {name} із номером {num}'
     else:
-        return 'Такий контакт вже створено '  
+        return 'такий контакт вже створено '  
     
 
 def change_func(name, num):
@@ -48,14 +50,18 @@ def hello_func():
 
 @input_error
 def main():
+    global error
     cmd_with_args = {'add': add_func,
               'change': change_func,
               'show': show_func,
               'phone': show_func}
     cmd_without_args = {'exit': good_bye_func, 'close': good_bye_func, 'good bye': good_bye_func,              
               'hello': hello_func}
-
+    
     while True:
+        if error :
+            print(error)
+            error = ''        
         user_input = input('Чекаю команду: ').lower()
         split_input = user_input.split()
         if len(split_input) > 1 and split_input[1] in ['bye']:
