@@ -22,7 +22,7 @@ def add_func(name, num):
         phone_book[name] = num
         return f'Створено контакт {name} із номером {num}'
     else:
-        return 'такий контакт вже створено '  
+        return 'Такий контакт вже створено '  
     
 
 def change_func(name, num):
