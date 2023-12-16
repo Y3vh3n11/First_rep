@@ -1,23 +1,24 @@
 from collections import UserDict
 
-class Field:
+class Field: # батьківський клас
     def __init__(self, value):
         self.value = value
 
     def __str__(self):
         return str(self.value)
 
-class Name(Field):
+class Name(Field): # 
     pass
     
 
-class Phone(Field):
+class Phone(Field): # 
     
-    def __init__(self, phone):       
+    def __init__(self, phone):       # валідація номера, 10 цифр
         if phone.isdigit() and len(phone) == 10:
             self.value = phone
         else:
             raise ValueError
+    
    
 
 class Record:
@@ -25,50 +26,49 @@ class Record:
     def __init__(self, name):
         self.name = Name(name)
         self.phones = []
-        print(self.name)      
+        # print(self.name)      
 
 
-    def add_phone(self, phone):
-        self.phones.append(Phone(phone))
-        # print(self.phones)
-        return self.phones
-        
+    def add_phone(self, phone_str): # додавання телефону
+        self.phones.append(Phone(phone_str)) 
+        return self.phones           
 
-    def remove_phone(self):
-        pass
+    def find_phone(self, phone_for_find_str): # пошук телефону
+        for phone_obj in self.phones:            
+            if str(phone_obj) == phone_for_find_str:
+                return phone_obj
+    
+    def edit_phone(self, phone_for_edit_str_old, phone_for_edit_str_new):
+        self.remove_phone(phone_for_edit_str_old)
+        self.phones.append(Phone(phone_for_edit_str_new))
+            
+    def remove_phone(self, phone_for_remove_str): # видалення телефону          
+        phone_obj = self.find_phone(phone_for_remove_str)        
+        self.phones.remove(phone_obj)  # видалення телефону     
 
-    def edit_phone(self):
-        pass
 
-    def find_phone(self):
-        pass
-
-
-    def __str__(self):
+    def __str__(self): 
         return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
 
 class AddressBook(UserDict):
+    name_of_obj = None
+    phones_of_obj = None
     def add_record(self, record_obj):        
         self.data[record_obj.name.value] = record_obj
-        # додає запис до self.data
+        self.name_of_obj = record_obj.name.value
+        self.phones_of_obj = '; '.join(p.value for p in record_obj.phones)
+           
+
+    def find(self, record_for_find_str): 
+        if record_for_find_str in self.data.keys():
+            return self.data[record_for_find_str]
+        else:
+            return None 
         
 
-    def find(self):
-        # шукає за ім'ям 
-        pass
-
-    def delete(self):
-        # видаляє за ім'ям
-        pass
-
+    def delete(self, record_for_del_str):         
+        if record_for_del_str in self.data.keys():
+            del self.data[record_for_del_str]
+                    
     def __str__(self):
-        return f"Contact name: "
-
-book = AddressBook()
-print(book)
-john_record = Record('John')
-john_record.add_phone("1234567890")
-john_record.add_phone("5555555555")
-# print(john_record.__str__())
-book.add_record(john_record)
-print(book.__str__())
+        return f"Contact name: {self.name_of_obj}, phones: {self.phones_of_obj}"
