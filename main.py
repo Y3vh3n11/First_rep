@@ -51,13 +51,10 @@ class Record:
         return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
 
 class AddressBook(UserDict):
-    name_of_obj = None
-    phones_of_obj = None
+   
     def add_record(self, record_obj):        
         self.data[record_obj.name.value] = record_obj
-        self.name_of_obj = record_obj.name.value
-        self.phones_of_obj = '; '.join(p.value for p in record_obj.phones)
-           
+        
 
     def find(self, record_for_find_str): 
         if record_for_find_str in self.data.keys():
@@ -71,4 +68,4 @@ class AddressBook(UserDict):
             del self.data[record_for_del_str]
                     
     def __str__(self):
-        return f"Contact name: {self.name_of_obj}, phones: {self.phones_of_obj}"
+        return '\n'.join(f"{value}" for value in self.data.values())
