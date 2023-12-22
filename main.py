@@ -1,45 +1,42 @@
 from collections import UserDict
 from datetime import datetime, date
 
-class Field: # батьківський клас
+class Field: 
     def __init__(self, value):
-        self.value = value
+        self.__value = value
 
     @property
     def value(self):
-        return self._value
+        return self.__value
+    
     @value.setter
-    def value(self, new_value):
-        self._value = new_value
+    def value(self, value):
+        if not self.is_valid(value):
+            raise ValueError
+        self.__value = value
+    
+    def is_valid(self, value):
+        return True
 
     def __str__(self):
-        return str(self._value)
+        return str(self.__value)
 
 class Name(Field): 
     pass
     
-
 class Birthday(Field):
-    @property
-    def value(self):
-        return self.__value
-
-    @value.setter
+    @Field.value.setter    
     def value(self, birthday):
         try:
             birthday = datetime.strptime(birthday, '%d.%m.%Y').date()
-            self.__value = birthday            
+            self.__value = str(birthday)      
         except ValueError:
             raise ValueError('Формат дати повинен бути ДД.ММ.РРРР')
         except TypeError:
             self.__value = None
 
-class Phone(Field): 
-    @property
-    def value(self):
-        return self.__value
-
-    @value.setter
+class Phone(Field):    
+    @Field.value.setter
     def value(self, new_phone):
         if new_phone.isdigit() and len(new_phone) == 10:
             self.__value = new_phone
@@ -74,13 +71,17 @@ class Record:
                 self.phones.remove(phone)  # видалення телефону     
 
     def day_to_birthday(self):
-        today = date.today()
+        today = date.today()       
         if self.birthday.value == None:
             return 'День народження не вказано'
-        if self.birthday.value.month >= today.month:
-            birthday = date(today.year, self.birthday.value.month, self.birthday.value.day)
         else:
-            birthday = date(today.year+1, self.birthday.value.month, self.birthday.value.day)
+            birthday = datetime.strptime(self.birthday.value, '%d.%m.%Y').date()
+        
+        if birthday.month >= today.month:
+            birthday = date(today.year, self.birthday.
+                            value.month, birthday.day)
+        else:
+            birthday = date(today.year+1, birthday.month, birthday.day)
             
         day = birthday - today   
         
@@ -92,7 +93,7 @@ class Record:
             result = f'Днів до дня народження: {day.days}' 
         return result        
 
-    def __str__(self): 
+    def __repr__(self): 
         if self.birthday.value == None:
             return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"    
         return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}, birthday: {self.birthday.value}"
@@ -113,25 +114,51 @@ class AddressBook(UserDict):
             del self.data[record_for_del_obj.name.value]
     
     def iterator(self, n):        
-        try:
-            step = 0
-            full_len = 0
-            result = ''
-            for val in self.data.values():
-                result += f'{val}\n'
-                step += 1
-                full_len +=1
-                if full_len >= len(self.data):
-                    yield result
-                    result = ''
-                elif step >= n:
-                    yield result
-                    result = ''                    
-                    step = 0
-            raise StopIteration           
+        records = list(self.data.values())       
+        for i in range(0, len(self.data), n):
+            yield records[i:i+n]        
         
-        except StopIteration:
-            return 'Книга закінчилася'        
-
     def __str__(self):
         return '\n'.join(f"{value}" for value in self.data.values())
+
+
+book = AddressBook()
+
+john_record = Record('John', '21.11.2002')
+john_record.add_phone("12345ff67890")
+john_record.add_phone("5555555555")
+book.add_record(john_record)
+olesya_record = Record('Olesya')
+olesya_record.add_phone('0961336547')
+olesya_record.add_phone('0000000000')
+olesya_record.add_phone('2222222222')
+book.add_record(olesya_record)
+jane_rec = Record('Jane')
+jane_rec.add_phone('0931256987')
+book.add_record(jane_rec)
+a = Record('A')
+book.add_record(a)
+b = Record('B')
+book.add_record(b)
+c = Record('C')
+book.add_record(c)
+d = Record('D')
+book.add_record(d)
+print(john_record.day_to_birthday())
+print(olesya_record.day_to_birthday())
+print(book)
+
+book.delete(jane_rec)
+print(book.find('John'))
+print(olesya_record)
+print(olesya_record)
+olesya_record.remove_phone('2222222222')
+print(olesya_record.find_phone('0000000000'))
+olesya_record.edit_phone('0000000000', '1111111111')
+print(olesya_record)
+a = book.iterator(2)
+print(next(a))
+print(next(a))
+print(next(a))
+print(next(a))
+print(next(a))
