@@ -1,5 +1,6 @@
 from collections import UserDict
 from datetime import datetime, date
+import json
  
  
 class Field:
@@ -118,6 +119,20 @@ class AddressBook(UserDict):
             return self.data[record_for_find_str]
         else:
             return None
+        
+    def find_new(self, find_str: str):
+        result = []
+        for i in self.data.values():
+            str_correction = str(i).split()
+            str_correction.remove('Contact')
+            str_correction.remove('name:')
+            str_correction.remove('phones:')
+            if 'birthday:' in str(i):
+                str_correction.remove('birthday:')
+            str_correction = ' '.join(str_correction)
+            if find_str.lower() in str_correction.lower():
+                result.append(i)
+        return result
  
     def delete(self, record_for_del_obj):
         if record_for_del_obj.name.value in self.data.keys():
@@ -127,7 +142,19 @@ class AddressBook(UserDict):
         records = list(self.data.values())
         for i in range(0, len(self.data), n):
             yield records[i:i + n]
- 
+
+    def write_to_file(self): # збереження даних у файл
+        val = {}
+        for key, values in self.data.items():
+            val[str(key)] = str(values)        
+        with open('AddressBook.json', 'w') as file:
+            json.dump(val, file)
+
+    def read_from_file(self): # завантаження даних із файлу
+        with open('AddressBook.json', 'r') as file:
+            self.data = json.load(file)
+
     def __str__(self):
         return '\n'.join(f"{value}" for value in self.data.values())
- 
+
+   
