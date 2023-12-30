@@ -45,12 +45,12 @@ class Phone(Field):
     def value(self):
         return self.__value
     @value.setter
-    #@Field.value.setter не працює
     def value(self, new_phone):
         if new_phone.isdigit() and len(new_phone) == 10:
             self.__value = new_phone
         else:
             raise ValueError('Невірний формат номеру телефону')
+            
     def __str__(self):
         return str(self.__value)
  
@@ -189,14 +189,16 @@ def input_error(func):                                                  # док
             except TypeError:
                 return 'Невірні параметри команди'                
             except IndexError:
-                return 'Введено невірні дані'                
+                return 'Введено невірні дані'     
+            except ValueError:
+                return 'Невірний формат номеру телефону' 
             else:
                 return res           
     return wrapper
 
 @input_error
 def add_func(name, num, birthday=None):                                                # функція додавання контактів
-    if name not in str(phone_book.keys()):
+    if name not in phone_book.keys():
         record = Record(name, birthday)
         record.add_phone(num)
         phone_book.add_record(record)
@@ -206,7 +208,7 @@ def add_func(name, num, birthday=None):                                         
     
 @input_error
 def change_func(name, num1, num2):                                             # функція зміни контактів
-        if name in str(phone_book.keys()):
+        if name in phone_book.keys():
             phone_book[name].edit_phone(num1, num2)
             return f'Номер {name} змінено з {num1} на {num2}'
         else:
@@ -219,7 +221,7 @@ def show_all_func():                                                    # фун
     
 @input_error
 def phone_func(name: str):                                                   # функція відображення одного контакту
-    if name not in str(phone_book.keys()):
+    if name not in phone_book.keys():
         return 'Такого контакту не існує'
     else:
         return f'{phone_book[name]}'
@@ -236,22 +238,49 @@ def hello_func():
 
 @input_error
 def day_to_birthday_func(name):                                         # днів до дня народження
-    return phone_book[name].day_to_birthday()
-
+    if name in phone_book.keys():
+        res = phone_book[name].day_to_birthday() if phone_book[name].day_to_birthday() != None else 'День народження не задано'
+    else:
+        res = 'Такого користувача не знайдено'
+    return res
 @input_error
 def add_phone_func(name, phone):
-    phone_book[name].add_phone(phone)
-    return f'Користувачу {name} додано телефон {phone}'
+    if name in phone_book.keys():
+        phone_book[name].add_phone(phone)
+        res = f'Користувачу {name} додано телефон {phone}'
+    else:
+        res = 'Такого користувача не існує'
+    return res
 
 @input_error
 def add_birthday_func(name, birthday):
-    phone_book[name].add_birthday(birthday)
-    return f'Користувачеві {name} додано день народження {birthday}'
+    if name in phone_book.keys():
+        phone_book[name].add_birthday(birthday)
+        res = f'Користувачеві {name} додано день народження {birthday}'
+    else:
+        res = 'Такого користувача не існує'
+    return res   
 
 
 @input_error
 def find_func(find_str):
     return phone_book.find_new(find_str)
+
+def help_func():
+    info = """
+        add ім'я_користувача день_народження            - додати користувача
+        change старий_номер новий_номер                 - змінити номер телефону
+        show all                                        - відобразити всю книгу
+        phone ім'я_користувача                          - відобразити конкретного користувача
+        exit/close/good bye                             - завершити роботу та зберегти дані
+        hello                                           - привітатися
+        day_to_birthday ім'я_користувача                - днів до дня народження
+        add_phone ім'я_користувача                      - додати користувачу телефон
+        add_birthday ім'я_користувача день_народження   - додати користувачу день народження 
+        find рядок_для_пошуку                           - пошук інформації по рядку
+        help                                            - всі команди
+    """
+    return info
 
 
 @input_error        
@@ -278,7 +307,8 @@ cmd_with_args = {'add': add_func,               # додати користув�
               'day_to_birthday': day_to_birthday_func,  # днів до дня народження
               'add_phone': add_phone_func,              # додати користувачу телефон
               'add_birthday': add_birthday_func,        # додати користувачу день народження 
-              'find': find_func                         # пошук інформації по рядку
+              'find': find_func,                         # пошук інформації по рядку
+              'help': help_func
               }  
 
 @input_error
