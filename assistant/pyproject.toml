@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "poetry"
+version = "0.1.0"
+description = ""
+authors = ["Y3vh3n11 <145870816+Y3vh3n11@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+prompt-toolkit = "^3.0.43"
+colored = "^2.2.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
