@@ -1,5 +1,6 @@
 from typing import List
 
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime
 from src.database.models import Contact
@@ -18,14 +19,25 @@ async def get_contacts(skip: int, limit: int, db: Session) -> List[Contact]:
 async def get_contact(contact_id:int, db: Session) -> Contact:
     return db.query(Contact).filter(Contact.id == contact_id).first()
 
-async def get_contact_fname(fname :str, db: Session) -> List[Contact]:
-    return db.query(Contact).filter(Contact.first_name == fname).all()
+async def search_contacts(skip: int,
+                       limit: int,
+                       first_name: str | None,
+                       last_name: str | None,
+                       email: str | None,
+                       db: Session) -> List[Contact]:
+    filters = []
+    if first_name:
+        filters.append(Contact.first_name == first_name)
+    if last_name:
+        filters.append(Contact.last_name == last_name)
+    if email:
+        filters.append(Contact.email == email)
 
-async def get_contact_lname(lname :str, db: Session) -> List[Contact]:
-    return db.query(Contact).filter(Contact.last_name == lname).all()
+    if not filters:
+        raise HTTPException(status_code=400, detail="Search criteria are not specified")
 
-async def get_contact_email(email :str, db: Session) -> List[Contact]:
-    return db.query(Contact).filter(Contact.email == email).all()
+    return db.query(Contact).filter(*filters).offset(skip).limit(limit).all()
+
 
 async def get_contacts_birthday(db: Session)-> List[Contact]:
     contacts = []

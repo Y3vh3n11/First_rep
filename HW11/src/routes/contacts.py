@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from src.database.db import get_db
@@ -16,24 +16,21 @@ async def read_contacts(skip: int = 0, limit: int = 100, db: Session = Depends(g
     contacts = await repository_contacts.get_contacts(skip, limit,db)
     return contacts
 
-@router.get('/find_first_name', response_model=List[ContactResponse])
-async def read_contacts(name:str, db: Session = Depends(get_db)):
-    contacts = await repository_contacts.get_contact_fname(name, db)
-    return contacts
-
-@router.get('/find_last_name', response_model=List[ContactResponse])
-async def read_contacts(name:str, db: Session = Depends(get_db)):
-    contacts = await repository_contacts.get_contact_lname(name, db)
-    return contacts
-
-@router.get('/find_email', response_model=List[ContactResponse])
-async def read_contacts(email:str, db: Session = Depends(get_db)):
-    contacts = await repository_contacts.get_contact_email(email, db)
-    return contacts
-
 @router.get('/find_birthday', response_model=List[ContactResponse])
 async def read_contacts(db: Session = Depends(get_db)):
     contacts = await repository_contacts.get_contacts_birthday(db)
+    return contacts
+
+@router.get("/search", response_model=List[ContactResponse])
+async def search_contacts(skip: int = 0,
+                        limit: int = 100,
+                        first_name: str = Query(None),
+                        last_name:  str = Query(None),
+                        email:  str = Query(None),
+                        db: Session = Depends(get_db)):
+    contacts = await repository_contacts.search_contacts(
+        skip, limit, first_name, last_name, email, db)
+    
     return contacts
 
 # отримати один контакт за ідентифікатором
