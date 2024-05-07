@@ -1,0 +1,43 @@
+{% extends "quotes/base.html" %}
+
+{% block body %}
+
+<form method="POST" action="{% url 'quotes:quote' %}">
+    {% csrf_token %}
+
+    <div class="row">
+        <div class="form-group col-xs-3">
+            <label for="username">Author:</label>
+            <br>
+            <select name="author" required>
+                {% for author in authors %}
+                <option value="{{author.fullname}}">{{author.fullname}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="form-group col-xs-3">
+            <label for="username">Quote:</label>
+            <br>
+            {{ form.quote }}
+            <span>{{ form.errors.quote }}</span>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="form-group col-xs-3">
+            <label for="username">Tags:</label>
+            <br>
+            {{ form.tag }}
+            <span>{{ form.errors.tags }}</span>
+        </div>
+    </div>
+
+
+    <input type="submit"  value="Add" class="btn btn-primary" />
+</form>
+{% endblock %}
