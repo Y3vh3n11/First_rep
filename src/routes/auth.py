@@ -28,17 +28,12 @@ async def signup(
 ):
     """
     The signup function creates a new user in the database.
-    
-    :param body: Get the data from the request body
-    :type body: UserModel
-    :param background_tasks:  Add a task to the background tasks queue
-    :type background_tasks: BackgroundTasks
-    :param request: Get the base_url of the server
-    :type request: Request
-    :param db: Get the database session
-    :type db: Session
+   
+    :param body: UserModel: Get the data from the request body
+    :param background_tasks: BackgroundTasks: Add a task to the background tasks queue
+    :param request: Request: Get the base_url of the server
+    :param db: Session: Get the database session
     :return: A dictionary with the user and a message
-    :rtype: dict
     """
     exist_user = await repository_users.get_user_by_email(body.email, db)
     if exist_user:
@@ -62,14 +57,11 @@ async def login(
     body: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
     """
-    The login function is used to authenticate a user.
+    The refresh_token function is used to refresh the access token.
     
-    :param body: Validate the request body
-    :type body: OAuth2PasswordRequestForm
-    :param db: Get the database session
-    :type db: Session
-    :return: A tuple of access_token and refresh_token
-    :rtype: dict
+    :param credentials: HTTPAuthorizationCredentials: Get the token from the request header
+    :param db: Session: Get the database session
+    :return: A dictionary with the new access token, refresh token and bearer type
     """
     user = await repository_users.get_user_by_email(body.username, db)
     if user is None:
@@ -102,13 +94,10 @@ async def refresh_token(
 ):
     """
     The refresh_token function is used to refresh the access token.
-        
-    :param credentials: Get the token from the request header
-    :type credentials: HTTPAuthorizationCredentials
-    :param db: Get the database session
-    :type db: Session
+
+    :param credentials: HTTPAuthorizationCredentials: Get the token from the request header
+    :param db: Session: Get the database session
     :return: A dictionary with the new access token, refresh token and bearer type
-    :rtype: dict
     """
     token = credentials.credentials
     email = await auth_service.decode_refresh_token(token)
@@ -133,13 +122,10 @@ async def refresh_token(
 async def confirmed_email(token: str, db: Session = Depends(get_db)):
     """
     The confirmed_email function takes a token and db as parameters.
-        
-    :param token: Get the token from the url
-    :type token: str
-    :param db: Get the database session
-    :type db: Session
+      
+    :param token: str: Get the token from the url
+    :param db: Session: Get the database session
     :return: A message that the email is already confirmed or a message that the email has been confirmed
-    :rtype: dict
     """
     # отримуємо електронну пошту користувача з токена.
     email = await auth_service.get_email_from_token(token)
@@ -160,18 +146,14 @@ async def confirmed_email(token: str, db: Session = Depends(get_db)):
 async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, request: Request,
                         db: Session = Depends(get_db)):
     """
-    The request_email function is used to send an email to confirm their email address. 
+    The request_email function is used to send an email to the user with a link that they can click on
+    to confirm their email address. 
 
-    :param body:  Get the email from the request body
-    :type body: RequestEmail
-    :param background_tasks:  Add a task to the background tasks queue
-    :type background_tasks: BackgroundTasks
-    :param request:  Get the base_url of the application
-    :type request: Request
-    :param db: Get the database session
-    :type db:Session
+    :param body: RequestEmail: Get the email from the request body
+    :param background_tasks: BackgroundTasks: Add a task to the background tasks queue
+    :param request: Request: Get the base_url of the application
+    :param db: Session: Get the database session
     :return: A message to the user
-    :rtype: dict
     """
     user = await repository_users.get_user_by_email(body.email, db)
 
@@ -188,15 +170,11 @@ async def update_avatar_user(file: UploadFile = File(), current_user: User = Dep
                              db: Session = Depends(get_db)):
     """
     The update_avatar_user function takes in a file, current_user and db as parameters.
-    
-    :param file: Get the file from the request body
-    :type file: UploadFile
-    :param current_user: Get the current user's email address
-    :type current_user: User
-    :param db: Access the database
-    :type db: Session
+   
+    :param file: UploadFile: Get the file from the request body
+    :param current_user: User: Get the current user's email address
+    :param db: Session: Access the database
     :return: The updated user object
-    :rtype: User
     """
     print(file)
     cloudinary.config(

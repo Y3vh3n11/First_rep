@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from ..conf.config import settings
+from src.conf.config import settings
 
 #  рядок з'єднання з базою даних.
 SQLALCHEMY_DATABASE_URL = settings.sqlalchemy_database_url
